@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Webbify — Edita tu web de WordPress desde WhatsApp</title>
+  <meta name="description" content="Envía un mensaje de WhatsApp y tu web de WordPress se actualiza al instante. Sin dashboards, sin código, sin esperas." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #25D366;
+      --green-dark: #128C7E;
+      --green-light: #DCF8C6;
+      --blue: #4F46E5;
+      --blue-light: #EEF2FF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-400: #9CA3AF;
+      --gray-600: #4B5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --wp-blue: #21759B;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--gray-900);
+      background: #fff;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-100);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--gray-900);
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 32px; height: 32px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--gray-600);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--gray-900); }
+
+    .nav-cta {
+      background: var(--green);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 600 !important;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--green-dark) !important; color: #fff !important; }
+
+    /* HERO */
+    .hero {
+      padding: 140px 24px 100px;
+      text-align: center;
+      background: linear-gradient(180deg, var(--gray-50) 0%, #fff 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(37,211,102,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 28px;
+    }
+
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.3); }
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--gray-900);
+      max-width: 800px;
+      margin: 0 auto 24px;
+    }
+
+    .hero h1 .accent {
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(17px, 2.5vw, 20px);
+      color: var(--gray-600);
+      max-width: 540px;
+      margin: 0 auto 48px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .hero-form {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      max-width: 480px;
+      margin: 0 auto 20px;
+      flex-wrap: wrap;
+    }
+
+    .hero-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 14px 18px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+
+    .hero-input:focus { border-color: var(--green); }
+    .hero-input::placeholder { color: var(--gray-400); }
+
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover { background: var(--green-dark); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,211,102,0.3); }
+
+    .hero-note {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 64px;
+    }
+
+    /* CHAT MOCKUP */
+    .hero-visual {
+      max-width: 440px;
+      margin: 0 auto;
+      background: #E5DDD5;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      text-align: left;
+    }
+
+    .chat-header {
+      background: var(--green-dark);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chat-avatar {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .chat-header-info .chat-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .chat-header-info .chat-status {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .chat-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 280px;
+    }
+
+    .msg {
+      max-width: 78%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .msg .time {
+      font-size: 11px;
+      color: rgba(0,0,0,0.4);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .msg-user {
+      background: #DCF8C6;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-bot {
+      background: #fff;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-bot .check-icon {
+      display: inline-block;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .typing {
+      background: #fff;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 7px; height: 7px;
+      background: var(--gray-400);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-6px); }
+    }
+
+    /* HOW IT WORKS */
+    section { padding: 100px 24px; }
+
+    .section-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-dark);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--gray-900);
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      text-align: center;
+      font-size: 17px;
+      color: var(--gray-600);
+      max-width: 520px;
+      margin: 0 auto 64px;
+    }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .step {
+      text-align: center;
+      padding: 40px 32px;
+      border-radius: var(--radius-lg);
+      background: var(--gray-50);
+      border: 1px solid var(--gray-100);
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .step:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+    .step-num {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--gray-900);
+    }
+
+    .step p {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+
+    /* FEATURES */
+    .features-bg { background: var(--gray-50); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover { border-color: var(--green); box-shadow: 0 8px 32px rgba(37,211,102,0.1); transform: translateY(-2px); }
+
+    .feature-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--gray-900);
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+
+    /* USE CASES */
+    .usecases-list {
+      max-width: 720px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .usecase {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .usecase-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .usecase p {
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .usecase code {
+      background: var(--green-light);
+      color: var(--green-dark);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    /* PRICING */
+    .pricing-grid {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .plan {
+      background: #fff;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+      flex: 1;
+      min-width: 260px;
+      max-width: 340px;
+      position: relative;
+    }
+
+    .plan.featured {
+      border-color: var(--green);
+      transform: scale(1.03);
+    }
+
+    .plan-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 100px;
+      white-space: nowrap;
+    }
+
+    .plan-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-600);
+      margin-bottom: 8px;
+    }
+
+    .plan-price {
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--gray-900);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .plan-price span {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--gray-400);
+    }
+
+    .plan-period {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-bottom: 28px;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+
+    .plan-features li::before {
+      content: '✓';
+      width: 20px; height: 20px;
+      background: var(--green-light);
+      color: var(--green-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .btn-plan {
+      width: 100%;
+      padding: 14px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid var(--green);
+    }
+
+    .btn-plan-outline { background: #fff; color: var(--green); }
+    .btn-plan-outline:hover { background: var(--green-light); }
+
+    .btn-plan-fill { background: var(--green); color: #fff; }
+    .btn-plan-fill:hover { background: var(--green-dark); }
+
+    /* TESTIMONIALS */
+    .testimonials-bg { background: var(--gray-50); }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .testimonial {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .testimonial .stars {
+      color: #FBBF24;
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+
+    .testimonial p {
+      font-size: 15px;
+      color: var(--gray-700);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .testimonial-avatar {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .testimonial-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .testimonial-role {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* CTA FINAL */
+    .cta-final {
+      background: linear-gradient(135deg, var(--green-dark), var(--green));
+      padding: 100px 24px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .cta-final h2 {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .cta-final p {
+      font-size: 18px;
+      opacity: 0.9;
+      margin-bottom: 40px;
+    }
+
+    .btn-cta-white {
+      background: #fff;
+      color: var(--green-dark);
+      border: none;
+      padding: 16px 32px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cta-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+
+    /* FOOTER */
+    footer {
+      background: var(--gray-900);
+      padding: 48px 24px;
+      color: var(--gray-400);
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    footer p { font-size: 14px; margin-bottom: 8px; }
+
+    footer a { color: var(--green); text-decoration: none; }
+
+    /* TECH STACK BADGE */
+    .tech-stack {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+
+    .tech-badge {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      gap: 48px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 48px 24px;
+      border-top: 1px solid var(--gray-100);
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--gray-900);
+      letter-spacing: -0.03em;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--gray-400);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .usecases-list { grid-template-columns: 1fr; }
+      .plan.featured { transform: scale(1); }
+      .hero-form { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    Webbify
+  </a>
+  <ul class="nav-links">
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#caracteristicas">Características</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#empezar" class="nav-cta">Empezar gratis →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    MVP en beta — Plazas limitadas
+  </div>
+
+  <h1>Tu web de WordPress,<br/><span class="accent">controlada por WhatsApp</span></h1>
+
+  <p class="hero-sub">
+    Envía un mensaje y tu web se actualiza al instante. Sin dashboards complicados, sin llamar al desarrollador, sin esperas.
+  </p>
+
+  <form class="hero-form" id="heroForm" onsubmit="handleSignup(event)">
+    <input
+      type="tel"
+      class="hero-input"
+      placeholder="+34 600 000 000"
+      id="phoneInput"
+      required
+    />
+    <button type="submit" class="btn-primary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.11 1.528 5.839L.057 23.05a1 1 0 0 0 1.225 1.225l5.261-1.48C8.149 23.498 10.029 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/>
+      </svg>
+      Empezar gratis
+    </button>
+  </form>
+
+  <p class="hero-note">✓ Gratis para siempre  &nbsp;·&nbsp;  ✓ Sin tarjeta de crédito  &nbsp;·&nbsp;  ✓ Setup en 2 minutos</p>
+
+  <!-- CHAT MOCKUP -->
+  <div class="hero-visual">
+    <div class="chat-header">
+      <div class="chat-avatar">W</div>
+      <div class="chat-header-info">
+        <div class="chat-name">Webbify ✓</div>
+        <div class="chat-status">En línea</div>
+      </div>
+    </div>
+    <div class="chat-body">
+      <div class="msg msg-user">
+        Hola, cambia el precio del "Pack Básico" a 49€
+        <div class="time">10:32 ✓✓</div>
+      </div>
+      <div class="msg msg-bot">
+        Entendido 🔍 He encontrado el producto <strong>"Pack Básico"</strong> en tu tienda. Precio actual: <strong>39€</strong>.
+        ¿Confirmas que quieres cambiarlo a <strong>49€</strong>?
+        <div class="time">10:32</div>
+      </div>
+      <div class="msg msg-user">
+        Sí, confirma
+        <div class="time">10:33 ✓✓</div>
+      </div>
+      <div class="msg msg-bot">
+        <span class="check-icon">✅</span> <strong>¡Listo!</strong> El precio del "Pack Básico" se ha actualizado a <strong>49€</strong> en tu web.
+        <br/><br/>
+        <em>web.miempresa.com/pack-basico</em>
+        <div class="time">10:33</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-number">43%</div>
+    <div class="stat-label">de internet usa WordPress</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">~2min</div>
+    <div class="stat-label">de setup promedio</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">&lt;5s</div>
+    <div class="stat-label">para aplicar un cambio</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">€0</div>
+    <div class="stat-label">para empezar</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="como-funciona">
+  <p class="section-label">Así de simple</p>
+  <h2 class="section-title">Tres pasos y ya tienes el control</h2>
+  <p class="section-sub">No necesitas saber de tecnología. Si sabes escribir un WhatsApp, sabes usar Webbify.</p>
+
+  <div class="how-steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h3>Regístrate con tu número</h3>
+      <p>Introduce tu teléfono y te llegará un mensaje de WhatsApp en segundos. Sin crear contraseñas.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h3>Conecta tu WordPress</h3>
+      <p>Instala nuestro plugin en tu web (1 minuto) y concede acceso. Solo lo haces una vez.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h3>Escribe y listo</h3>
+      <p>Manda un mensaje en lenguaje natural. Webbify lo entiende, te pide confirmación y actualiza tu web.</p>
+    </div>
+  </div>
+
+  <div class="tech-stack">
+    <span class="tech-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.11 1.528 5.839L.057 23.05a1 1 0 0 0 1.225 1.225l5.261-1.48C8.149 23.498 10.029 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+      WhatsApp Business API
+    </span>
+    <span class="tech-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="#21759B"><path d="M12.158 0C5.434 0 0 5.434 0 12.158c0 6.723 5.434 12.157 12.158 12.157 6.723 0 12.157-5.434 12.157-12.157C24.315 5.434 18.881 0 12.158 0zm1.064 18.97l-1.064.016-1.064-.016c-.83-.012-1.634-.078-2.395-.197l-2.012-8.11h-.995L5.62 7.408h13.075l-.072 3.254h-.994l-2.012 8.11c-.761.12-1.565.186-2.395.198z"/></svg>
+      WordPress
+    </span>
+    <span class="tech-badge">
+      🤖 IA con Claude / GPT-4o
+    </span>
+    <span class="tech-badge">
+      ⚡ n8n Automation
+    </span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="caracteristicas" class="features-bg">
+  <p class="section-label">Características</p>
+  <h2 class="section-title">Todo lo que necesitas para gestionar tu web</h2>
+  <p class="section-sub">Webbify entiende lo que quieres decir y lo ejecuta de forma segura.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#FEF3C7">🧠</div>
+      <h3>IA que te entiende</h3>
+      <p>No hace falta escribir comandos exactos. Di lo que necesitas en lenguaje natural, en español o inglés, y la IA lo interpreta.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#ECFDF5">🛡️</div>
+      <h3>Confirmación antes de actuar</h3>
+      <p>Nunca se hace ningún cambio sin que lo apruebes. Recibirás un resumen de lo que se va a modificar antes de aplicarlo.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#EEF2FF">🏪</div>
+      <h3>WooCommerce incluido</h3>
+      <p>Actualiza precios, stock, descripciones y estado de productos de tu tienda online desde WhatsApp.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#FFF1F2">📝</div>
+      <h3>Páginas y entradas</h3>
+      <p>Edita textos, publica borradores, actualiza menús o añade avisos en cualquier página de tu web.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#F5F3FF">🔒</div>
+      <h3>Conexión segura</h3>
+      <p>Tu WordPress se conecta mediante un plugin propio con API key única. Solo tú tienes el acceso.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:#FFF7ED">📋</div>
+      <h3>Historial de cambios</h3>
+      <p>Todos los cambios quedan registrados en tu WordPress. Puedes ver qué se modificó, cuándo y qué mensaje lo originó.</p>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section>
+  <p class="section-label">Casos de uso</p>
+  <h2 class="section-title">¿Qué puedes pedirle a Webbify?</h2>
+  <p class="section-sub">Esto son ejemplos reales de mensajes que puedes enviar por WhatsApp.</p>
+
+  <div class="usecases-list">
+    <div class="usecase">
+      <span class="usecase-icon">📞</span>
+      <p>"Cambia mi número de teléfono a <code>+34 611 222 333</code> en toda la web"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">⏰</span>
+      <p>"Actualiza el horario: abierto de <code>lunes a sábado, 9h a 20h</code>"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">💰</span>
+      <p>"Sube el precio del pack premium a <code>99€</code>"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">📢</span>
+      <p>"Añade un banner de vacaciones del <code>1 al 15 de agosto</code>"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">📦</span>
+      <p>"El stock del producto Camiseta XL está en <code>0 unidades</code>, ponlo fuera de stock"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">📰</span>
+      <p>"Publica el post que tengo en borrador sobre <code>mis nuevos servicios</code>"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">📍</span>
+      <p>"Cambia la dirección en la página de contacto a <code>Calle Mayor 15, Madrid</code>"</p>
+    </div>
+    <div class="usecase">
+      <span class="usecase-icon">🖼️</span>
+      <p>"¿Qué páginas tengo en mi web?" para ver un listado completo</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="precios" class="features-bg">
+  <p class="section-label">Precios</p>
+  <h2 class="section-title">Simple y transparente</h2>
+  <p class="section-sub">Empieza gratis. Escala cuando lo necesites.</p>
+
+  <div class="pricing-grid">
+    <div class="plan">
+      <div class="plan-name">Gratis</div>
+      <div class="plan-price">€0</div>
+      <div class="plan-period">para siempre</div>
+      <ul class="plan-features">
+        <li>3 ediciones al mes</li>
+        <li>1 sitio WordPress</li>
+        <li>Páginas y entradas</li>
+        <li>Soporte por email</li>
+      </ul>
+      <button class="btn-plan btn-plan-outline" onclick="document.getElementById('heroForm').scrollIntoView({behavior:'smooth'})">
+        Empezar gratis
+      </button>
+    </div>
+
+    <div class="plan featured">
+      <div class="plan-badge">⭐ Más popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">€19<span>/mes</span></div>
+      <div class="plan-period">facturación mensual</div>
+      <ul class="plan-features">
+        <li>Ediciones ilimitadas</li>
+        <li>3 sitios WordPress</li>
+        <li>WooCommerce incluido</li>
+        <li>Historial de 30 días</li>
+        <li>Soporte prioritario</li>
+      </ul>
+      <button class="btn-plan btn-plan-fill" onclick="document.getElementById('heroForm').scrollIntoView({behavior:'smooth'})">
+        Empezar con Pro
+      </button>
+    </div>
+
+    <div class="plan">
+      <div class="plan-name">Agencia</div>
+      <div class="plan-price">€49<span>/mes</span></div>
+      <div class="plan-period">facturación mensual</div>
+      <ul class="plan-features">
+        <li>Ediciones ilimitadas</li>
+        <li>Sitios ilimitados</li>
+        <li>WooCommerce + ACF</li>
+        <li>White-label disponible</li>
+        <li>API propia</li>
+        <li>Soporte dedicado</li>
+      </ul>
+      <button class="btn-plan btn-plan-outline" onclick="document.getElementById('heroForm').scrollIntoView({behavior:'smooth'})">
+        Contactar
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-bg">
+  <p class="section-label">Testimonios</p>
+  <h2 class="section-title">Lo que dicen nuestros primeros usuarios</h2>
+  <p class="section-sub">Beta testers que ya gestionan su web desde el móvil.</p>
+
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p>"Antes tardaba 3 días en que mi agencia actualizara los precios. Ahora lo hago yo sola en 10 segundos desde el sofá. Increíble."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#F472B6,#EC4899)">M</div>
+        <div>
+          <div class="testimonial-name">María G.</div>
+          <div class="testimonial-role">Clínica de estética, Madrid</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <p>"Tengo una tienda online con 200 productos. Actualizar stock era mi pesadilla. Ahora mando un mensaje y listo. El paywall me hizo upgrade en el día."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#60A5FA,#3B82F6)">R</div>
+        <div>
+          <div class="testimonial-name">Roberto P.</div>
+          <div class="testimonial-role">Tienda deportiva, Barcelona</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★☆</div>
+      <p>"Lo uso principalmente para publicar posts y cambiar horarios. La IA entiende perfectamente lo que le pido, aunque a veces le tengo que ser más específico."</p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar" style="background:linear-gradient(135deg,#34D399,#10B981)">A</div>
+        <div>
+          <div class="testimonial-name">Ana L.</div>
+          <div class="testimonial-role">Restaurante, Valencia</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<div class="cta-final" id="empezar">
+  <h2>Empieza a controlar tu web<br/>desde WhatsApp hoy mismo</h2>
+  <p>Gratis para siempre. Sin tarjeta de crédito. Setup en 2 minutos.</p>
+  <button class="btn-cta-white" onclick="document.getElementById('heroForm').scrollIntoView({behavior:'smooth'})">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="#128C7E"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.11 1.528 5.839L.057 23.05a1 1 0 0 0 1.225 1.225l5.261-1.48C8.149 23.498 10.029 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+    Empezar gratis con WhatsApp
+  </button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Webbify</div>
+  <p>Tu web de WordPress, controlada desde WhatsApp.</p>
+  <p style="margin-top:20px;font-size:12px;color:#4B5563">© 2025 Webbify · <a href="#">Privacidad</a> · <a href="#">Términos</a> · <a href="mailto:hola@webbify.io">hola@webbify.io</a></p>
+</footer>
+
+<script>
+  function handleSignup(e) {
+    e.preventDefault();
+    const phone = document.getElementById('phoneInput').value;
+    if (!phone) return;
+    // In production: POST to your backend/n8n webhook
+    alert(`¡Genial! En unos segundos recibirás un WhatsApp en ${phone} con tus instrucciones de acceso. 🚀`);
+    document.getElementById('heroForm').reset();
+  }
+</script>
+
+</body>
+</html>
